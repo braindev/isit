@@ -25,13 +25,13 @@ rg := isit.RuleGroup{
   }
 }
 
-result, _ := rg.Test(map[string]interface{"age": 17, "parent_permission": false})
+result, _ := rg.Test(map[string]interface{}{"age": 17, "parent_permission": false})
 // result == false
 
-result, _ := rg.Test(map[string]interface{"age": 17, "parent_permission": true})
+result, _ := rg.Test(map[string]interface{}{"age": 17, "parent_permission": true})
 // result == true
 
-result, _ := rg.Test(map[string]interface{"age": 18, "parent_permission": true})
+result, _ := rg.Test(map[string]interface{}{"age": 18, "parent_permission": true})
 // result == true
 ```
 
