@@ -51,7 +51,8 @@ These are the types of values that should be used with together.  The "Rule Valu
 | string | not_eq &mdash; _less than or equal to_ | string |
 | string | regex &mdash; _matches regular expression_ | string &mdash; _the regular expression_ |
 | string | not_regex &mdash; _doesn't match regular expression_ | string &mdash; _the regular expression_ |
-
+| bool | eq &mdash; _equal to_ | bool |
+| bool | not_eq &mdash; _less than or equal to_ | bool |
 
 #### Nested Example
 
