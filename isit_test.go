@@ -1,9 +1,6 @@
 package isit
 
-import (
-	"encoding/json"
-	"testing"
-)
+import "testing"
 
 func Test_Test(t *testing.T) {
 	values := map[string]interface{}{
@@ -107,10 +104,68 @@ func Test_ruleTest_numeric(t *testing.T) {
 		t.Error(`testing 11 gt_eq 10 returned`, result, err)
 	}
 	if result, err := ruleTest(rule, map[string]interface{}{"v": 10}); !result || err != nil {
-		t.Error(`testing 10 gt 10 returned`, result, err)
+		t.Error(`testing 10 gt_eq 10 returned`, result, err)
 	}
 	if result, err := ruleTest(rule, map[string]interface{}{"v": 9}); result || err != nil {
+		t.Error(`testing 9 gt_eq 10 returned`, result, err)
+	}
+
+	rule.Operator = "lt"
+	if result, err := ruleTest(rule, map[string]interface{}{"v": 9}); !result || err != nil {
 		t.Error(`testing 9 gt 10 returned`, result, err)
+	}
+	if result, err := ruleTest(rule, map[string]interface{}{"v": 10}); result || err != nil {
+		t.Error(`testing 10 lt 10 returned`, result, err)
+	}
+
+	rule.Operator = "lt_eq"
+	if result, err := ruleTest(rule, map[string]interface{}{"v": 11}); result || err != nil {
+		t.Error(`testing 11 lt_eq 10 returned`, result, err)
+	}
+	if result, err := ruleTest(rule, map[string]interface{}{"v": 10}); !result || err != nil {
+		t.Error(`testing 10 lt_eq 10 returned`, result, err)
+	}
+	if result, err := ruleTest(rule, map[string]interface{}{"v": 9}); !result || err != nil {
+		t.Error(`testing 9 lt_eq 10 returned`, result, err)
+	}
+}
+
+func Test_ruleTest_string(t *testing.T) {
+	rule := Rule{
+		Property: "v",
+		Operator: "eq",
+		Value:    "giggle",
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "giggle"}); !res || err != nil {
+		t.Error(`Testing "giggle" eq "giggle" returned`, res, err)
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "jiggle"}); res || err != nil {
+		t.Error(`Testing "jiggle" eq "giggle" returned`, res, err)
+	}
+
+	rule.Operator = "not_eq"
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "giggle"}); res || err != nil {
+		t.Error(`Testing "giggle" not_eq "giggle" returned`, res, err)
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "jiggle"}); !res || err != nil {
+		t.Error(`Testing "jiggle" not_eq "giggle" returned`, res, err)
+	}
+
+	rule.Operator = "regex"
+	rule.Value = "^x[123]{1,3}z$"
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "x133z"}); !res || err != nil {
+		t.Error(`Testing "x133z" regex matches "^x[123]{1,3}z$" returned`, res, err)
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "x133q"}); res || err != nil {
+		t.Error(`Testing "x133q" regex matches "^x[123]{1,3}z$" returned`, res, err)
+	}
+
+	rule.Operator = "not_regex"
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "x133z"}); res || err != nil {
+		t.Error(`Testing "x133z" doesn't regex match "^x[123]{1,3}z$" returned`, res, err)
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "x133q"}); !res || err != nil {
+		t.Error(`Testing "x133q" doesn't regex match "^x[123]{1,3}z$" returned`, res, err)
 	}
 
 }
@@ -149,7 +204,6 @@ func ruleGroup1() *RuleGroup {
 		}
 	]
 }`)
-	rg := RuleGroup{}
-	json.Unmarshal(data, &rg)
-	return &rg
+	rg, _ := NewRuleGroupFromJSON(data)
+	return rg
 }

@@ -1,6 +1,7 @@
 package isit
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
@@ -21,6 +22,13 @@ type Rule struct {
 	RuleGroup *RuleGroup  `json:"rule_group,omitempty"`
 }
 
+// NewRuleGroupFromJSON creates a new rule group from JSON
+func NewRuleGroupFromJSON(j []byte) (*RuleGroup, error) {
+	rg := new(RuleGroup)
+	err := json.Unmarshal(j, rg)
+	return rg, err
+}
+
 // Test runs a rule group against a group of values
 func (rg *RuleGroup) Test(values map[string]interface{}) (bool, error) {
 	logic := strings.ToUpper(rg.Logic)
@@ -30,6 +38,32 @@ func (rg *RuleGroup) Test(values map[string]interface{}) (bool, error) {
 		return rulesOr(rg.Rules, values)
 	}
 	return false, fmt.Errorf(`unsupported logic "%s" logic must be "and" or "or"`, rg.Logic)
+}
+
+// And allows two rule groups to be "anded" together
+func (rg *RuleGroup) And(andGroup *RuleGroup) *RuleGroup {
+	newGroup := RuleGroup{
+		Logic: "and",
+		Rules: []Rule{
+			{RuleGroup: rg},
+			{RuleGroup: andGroup},
+		},
+	}
+
+	return &newGroup
+}
+
+// Or allows two rule groups to be "or" together
+func (rg *RuleGroup) Or(orGroup *RuleGroup) *RuleGroup {
+	newGroup := RuleGroup{
+		Logic: "or",
+		Rules: []Rule{
+			{RuleGroup: rg},
+			{RuleGroup: orGroup},
+		},
+	}
+
+	return &newGroup
 }
 
 func rulesAnd(rules []Rule, values map[string]interface{}) (bool, error) {
