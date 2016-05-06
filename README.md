@@ -46,15 +46,15 @@ These are the types of values that should be used with together.  The "Rule Valu
 | numeric | lt &mdash; _less than_ | numeric |
 | numeric | lt_eq &mdash; _less than or equal to_ | numeric |
 | numeric | eq &mdash; _equal to_ | numeric |
-| numeric | not_eq &mdash; _less than or equal to_ | numeric |
+| numeric | not_eq &mdash; _not equal to_ | numeric |
 | string | eq &mdash; _equal to_ | string |
-| string | not_eq &mdash; _less than or equal to_ | string |
+| string | not_eq &mdash; _not equal to_ | string |
 | string | regex &mdash; _matches regular expression_ | string &mdash; _the regular expression_ |
 | string | not_regex &mdash; _doesn't match regular expression_ | string &mdash; _the regular expression_ |
-| string | in &mdash; _one of a group_ | []string |
-| string | not_in &mdash; _not one of a group_ | []string |
+| string | in &mdash; _one of a group_ | []string &mdash; |
+| string | not_in &mdash; _not one of a group_ | []string &mdash; |
 | bool | eq &mdash; _equal to_ | bool |
-| bool | not_eq &mdash; _less than or equal to_ | bool |
+| bool | not_eq &mdash; _not equal to_ | bool |
 
 #### Nested Example
 
@@ -86,5 +86,5 @@ rg := isit.RuleGroup{
 #### TODO
 
 - More tests
-- ~~Add `in` and `not_in` for testing inclusion or exclusion of a string to a group of strings~~
+- Add `in` and `not_in` for testing inclusion or exclusion of a string to a group of strings
 - Benchmarks
