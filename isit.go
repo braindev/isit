@@ -37,17 +37,41 @@ func rulesAnd(rules []Rule, values map[string]interface{}) (bool, error) {
 	if len(rules) == 0 {
 		return false, errors.New("A rule group may not have an empty list of rules.")
 	}
-	return false, nil
+	for _, r := range rules {
+		result, err := ruleTest(r, values)
+		if err != nil {
+			return false, err
+		}
+		if !result {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 func rulesOr(rules []Rule, values map[string]interface{}) (bool, error) {
 	if len(rules) == 0 {
 		return false, errors.New("A rule group may not have an empty list of rules.")
 	}
+
+	for _, r := range rules {
+		result, err := ruleTest(r, values)
+		if err != nil {
+			return false, err
+		}
+		if result {
+			return true, nil
+		}
+	}
+
 	return false, nil
 }
 
 func ruleTest(rule Rule, values map[string]interface{}) (bool, error) {
+	if rule.RuleGroup != nil {
+		return rule.RuleGroup.Test(values)
+	}
+
 	actual, ok := values[rule.Property]
 	if !ok {
 		return false, fmt.Errorf("property %s not found in values", rule.Property)

@@ -5,6 +5,19 @@ import (
 	"testing"
 )
 
+func Test_Test(t *testing.T) {
+	values := map[string]interface{}{
+		"foo":    "hxllo",
+		"bar":    "room for jello",
+		"iq":     99,
+		"height": 7.5,
+	}
+	rg := ruleGroup1()
+	if res, err := rg.Test(values); err != nil || !res {
+		t.Error("Test called with valid values and valid rules should return true with no error.  Returned: ", res, err)
+	}
+}
+
 func Test_Test_Logic(t *testing.T) {
 	rg := RuleGroup{
 		Logic: "derrrr",
@@ -114,8 +127,8 @@ func ruleGroup1() *RuleGroup {
 		},
 		{
 			"property": "bar",
-			"operator": "in",
-			"value": ["1","2","3"]
+			"operator": "regex",
+			"value": "ello"
 		},
 		{
 			"rule_group": {
