@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -169,40 +168,35 @@ func ruleTestBool(v bool, rule Rule) (bool, error) {
 }
 
 func floatFromInterface(val interface{}) (float64, error) {
-	switch val.(type) {
+	switch t := val.(type) {
+	default:
+		return 0.0, fmt.Errorf("Expected numeric value, got \"%v\"\n", val)
 	case float32:
-		return float64(val.(float32)), nil
+		return float64(t), nil
 	case float64:
-		return val.(float64), nil
+		return t, nil
 
 	case int:
-		return float64(val.(int)), nil
+		return float64(t), nil
 	case int8:
-		return float64(val.(int8)), nil
+		return float64(t), nil
 	case int16:
-		return float64(val.(int16)), nil
+		return float64(t), nil
 	case int32:
-		return float64(val.(int32)), nil
+		return float64(t), nil
 	case int64:
-		return float64(val.(int64)), nil
+		return float64(t), nil
 
 	case uint:
-		return float64(val.(uint)), nil
+		return float64(t), nil
 	case uint8:
-		return float64(val.(uint8)), nil
+		return float64(t), nil
 	case uint16:
-		return float64(val.(uint16)), nil
+		return float64(t), nil
 	case uint32:
-		return float64(val.(uint32)), nil
+		return float64(t), nil
 	case uint64:
-		return float64(val.(uint64)), nil
+		return float64(t), nil
 
-	case string: // TODO needed? good idea/bad idea?
-		fval, err := strconv.ParseFloat(val.(string), 64)
-		if err == nil {
-			return fval, nil
-		}
 	}
-
-	return 0.0, fmt.Errorf("Expected numeric value, got \"%v\"\n", val)
 }
