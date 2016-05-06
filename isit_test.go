@@ -192,6 +192,21 @@ func Test_ruleTest_string(t *testing.T) {
 		t.Error(`Testing "x133q" doesn't regex match "^x[123]{1,3}z$" returned`, res, err)
 	}
 
+	rule = Rule{
+		Property: "v",
+		Operator: "in",
+		Value:    []string{"a", "b", "c"},
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "b"}); !res || err != nil {
+		t.Error(`Testing  "b" in ["a", "b", "c"] returned`, res, err)
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "c"}); !res || err != nil {
+		t.Error(`Testing  "c" in ["a", "b", "c"] returned`, res, err)
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": "d"}); res || err != nil {
+		t.Error(`Testing  "d" in ["a", "b", "c"] returned`, res, err)
+	}
+
 }
 
 func ruleGroup1() *RuleGroup {

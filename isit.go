@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"regexp"
 	"strings"
 )
@@ -150,18 +151,44 @@ func ruleTestNumeric(actual interface{}, v float64, rule Rule) (bool, error) {
 }
 
 func ruleTestString(v string, rule Rule) (bool, error) {
+	op := strings.ToUpper(rule.Operator)
+
+	// in and not_int are special in that the rule value must be a slice of
+	// strings
+	if op == "IN" || op == "NOT_IN" {
+		arr, err := toStringSlice(rule.Value)
+		if err != nil {
+			return false, fmt.Errorf(`for the operators "in" and "not_in" the rule value must be []string %T given`, rule.Value)
+		}
+		if op == "IN" {
+			for _, s := range arr {
+				if v == s {
+					return true, nil
+				}
+			}
+			return false, nil
+		}
+		for _, s := range arr {
+			if v == s {
+				return false, nil
+			}
+		}
+		return true, nil
+	}
+
+	// the rest of the string operators expect the rule value to be a string
 	expected, ok := rule.Value.(string)
 	if !ok {
 		return false, fmt.Errorf("type mismatch actual value type string expected type %T", rule.Value)
 	}
-	switch strings.ToUpper(rule.Operator) {
+	switch op {
 	default:
 		return false, fmt.Errorf("unsupported operator: %s for type string", rule.Operator)
 	case "EQ":
 		return v == expected, nil
 	case "NOT_EQ":
 		return v != expected, nil
-	case "GT":
+	case "GT": // TODO are gt, lt, etc... a good idea for string operators?
 		return v > expected, nil
 	case "GT_EQ":
 		return v >= expected, nil
@@ -233,4 +260,28 @@ func floatFromInterface(val interface{}) (float64, error) {
 		return float64(t), nil
 
 	}
+}
+
+func isSlice(o interface{}) bool {
+	return reflect.ValueOf(o).Kind() == reflect.Slice
+}
+
+func toStringSlice(o interface{}) ([]string, error) {
+	if !isSlice(o) {
+		return nil, fmt.Errorf("%v is not a slice", o)
+	}
+
+	s := reflect.ValueOf(o)
+	ret := make([]string, s.Len())
+
+	for i := 0; i < s.Len(); i++ {
+		v := s.Index(i).Interface()
+		var ok bool
+		ret[i], ok = v.(string)
+		if !ok {
+			return nil, fmt.Errorf("%v is not a string", v)
+		}
+	}
+
+	return ret, nil
 }
