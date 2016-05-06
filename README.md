@@ -86,5 +86,5 @@ rg := isit.RuleGroup{
 #### TODO
 
 - More tests
-- Add `in` and `not_in` for testing inclusion or exclusion of a string to a group of strings
+- ~~Add `in` and `not_in` for testing inclusion or exclusion of a string to a group of strings~~
 - Benchmarks
