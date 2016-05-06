@@ -128,6 +128,30 @@ func Test_ruleTest_numeric(t *testing.T) {
 	if result, err := ruleTest(rule, map[string]interface{}{"v": 9}); !result || err != nil {
 		t.Error(`testing 9 lt_eq 10 returned`, result, err)
 	}
+
+	tens := []interface{}{10, int8(10), int16(10), int32(10), int64(10), uint(10), uint8(10), uint16(10), uint32(10), uint64(10), float32(10.0), float64(10)}
+	rule = Rule{
+		Property: "v",
+		Operator: "eq",
+		Value:    10,
+	}
+	for _, ten := range tens {
+		if result, err := ruleTest(rule, map[string]interface{}{"v": ten}); !result || err != nil {
+			t.Errorf(`testing 10 (%T) eq 10 returned %v %v`, ten, result, err)
+		}
+	}
+
+	for _, ten := range tens {
+		rule = Rule{
+			Property: "v",
+			Operator: "eq",
+			Value:    ten,
+		}
+
+		if result, err := ruleTest(rule, map[string]interface{}{"v": 10}); !result || err != nil {
+			t.Errorf(`testing 10 eq 10 (%T) returned %v %v`, ten, result, err)
+		}
+	}
 }
 
 func Test_ruleTest_string(t *testing.T) {
