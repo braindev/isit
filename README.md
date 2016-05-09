@@ -69,8 +69,8 @@ It could be written as:
 ```go
 rg := isit.RuleGroup{
   Logic: "and",
-  Rules: []isit:Rule{
-    { Property: "activity", Operator: "eq", Value: "rock climbing" }
+  Rules: []isit.Rule{
+    { Property: "activity", Operator: "eq", Value: "rock climbing" },
     {
       RuleGroup: &isit.RuleGroup{
       Logic: "or",
