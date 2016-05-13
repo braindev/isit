@@ -154,6 +154,29 @@ func Test_ruleTest_numeric(t *testing.T) {
 	}
 }
 
+func Test_ruleTest_stringSlice(t *testing.T) {
+	rule := Rule{
+		Property: "v",
+		Operator: "has",
+		Value:    "oranges",
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": []string{"a", "b", "oranges"}}); !res || err != nil {
+		t.Errorf(`testing ["a", "b", "oranges"] has "oranges" returned %v %v`, res, err)
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": []string{"a", "b", "c"}}); res || err != nil {
+		t.Errorf(`testing ["a", "b", "c"] has "oranges" returned %v %v`, res, err)
+	}
+
+	rule.Operator = "does_not_have"
+	if res, err := ruleTest(rule, map[string]interface{}{"v": []string{"a", "b", "oranges"}}); res || err != nil {
+		t.Errorf(`testing ["a", "b", "oranges"] does_not_have "oranges" returned %v %v`, res, err)
+	}
+	if res, err := ruleTest(rule, map[string]interface{}{"v": []string{"a", "b", "c"}}); !res || err != nil {
+		t.Errorf(`testing ["a", "b", "c"] does_not_have "oranges" returned %v %v`, res, err)
+	}
+
+}
+
 func Test_ruleTest_string(t *testing.T) {
 	rule := Rule{
 		Property: "v",
