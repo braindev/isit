@@ -113,6 +113,11 @@ func ruleTest(rule Rule, values map[string]interface{}) (bool, error) {
 
 	switch t := actual.(type) {
 	default:
+		if isSlice(actual) {
+			if ss, err := toStringSlice(actual); err == nil {
+				return ruleTestStringSlice(ss, rule)
+			}
+		}
 		return false, fmt.Errorf("unexpected type %T in rule value", t)
 	case bool:
 		v, _ := values[rule.Property].(bool)
@@ -124,7 +129,21 @@ func ruleTest(rule Rule, values map[string]interface{}) (bool, error) {
 		v, _ := floatFromInterface(values[rule.Property])
 		return ruleTestNumeric(actual, v, rule)
 	}
+}
 
+func ruleTestStringSlice(ss []string, rule Rule) (bool, error) {
+	expected, ok := rule.Value.(string)
+	if !ok {
+		return false, fmt.Errorf("Invalid rule value type (%T) for property type []string", expected)
+	}
+	switch strings.ToUpper(rule.Operator) {
+	default:
+		return false, fmt.Errorf("unsupported operator: %s for type []string", rule.Operator)
+	case "HAS":
+		return stringSliceContains(ss, expected), nil
+	case "DOES_NOT_HAVE":
+		return !stringSliceContains(ss, expected), nil
+	}
 }
 
 func ruleTestNumeric(actual interface{}, v float64, rule Rule) (bool, error) {
@@ -284,4 +303,13 @@ func toStringSlice(o interface{}) ([]string, error) {
 	}
 
 	return ret, nil
+}
+
+func stringSliceContains(ss []string, s string) bool {
+	for _, v := range ss {
+		if s == v {
+			return true
+		}
+	}
+	return false
 }

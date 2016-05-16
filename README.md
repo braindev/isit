@@ -55,6 +55,8 @@ These are the types of values that should be used with together.  The "Rule Valu
 | string | `not_in` &mdash; _not one of a group_ | []string |
 | bool | `eq` &mdash; _equal to_ | bool |
 | bool | `not_eq` &mdash; _not equal to_ | bool |
+| []string | `has` &mdash; _includes item_ | string |
+| []string | `does_not_have` &mdash; _doesn't include item_ | string
 
 #### Nested Example
 
